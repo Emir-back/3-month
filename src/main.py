@@ -7,11 +7,8 @@ def main(page: ft.Page):
     # установка заголовка
     page.title = "Приложение для управления списком дел"
     page.window.width = 1024
-    page.scroll = "always"
+    page.scroll = 'always'
     expenses = []
-    total_expenses = ft.Text(value="total expenses: 0 ", size = 20)
-    expense_list = ft.Column
-
 
     # создание объекта Database для работы с БД
     database = Database("database.sqlite")
@@ -22,16 +19,6 @@ def main(page: ft.Page):
     title = ft.Text(
         value="Список дел на день", size=30, weight=ft.FontWeight.BOLD, italic=True
     )
-
-    def update_total():
-        total=sum(int(e['amount'])for e in expenses)
-        total_expenses.value = f'total expenses:{total}'
-        page.update()
-
-    def delete_expenses(e,index):
-        expenses.pop(index)
-        expense_list.controls.pop(index)
-        update_total()
 
     # функция, которая будет возвращать список Row с задачами из БД
     def build_rows():
@@ -109,11 +96,10 @@ def main(page: ft.Page):
         controls=build_rows(),  # список элементов, которые будут в колонке
     )  # место, где будет отображаться список
 
-
     # добавление элементов на страницу(окно)
     page.add(
         title, form_area, todo_list_area
     )  # от того, в каком порядке они тут добавляются, зависит в каком порядке они отображаются
 
 
-ft.app(target=main)
+ft.app(main)

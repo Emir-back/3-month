@@ -1,6 +1,9 @@
 import sqlite3
 
 
+# CRUD - Create, Read, Update, Delete
+
+
 class Database:
     def __init__(self, path: str):
         self.path = path
@@ -11,42 +14,55 @@ class Database:
             cursor = conn.cursor()
             cursor.execute(
                 """
-                CREATE TABLE IF NOT EXISTS products(
+                CREATE TABLE IF NOT EXISTS todos (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT,
-                    expense INTEGER
+                    todo TEXT,
+                    category TEXT
                 )
                 """
             )
             conn.commit()
-    def add_name(self, name: str, expense: int):
+
+    # добавление задачи(todo) в таблицу todos
+    def add_todo(self, todo: str, category: str):
         with sqlite3.connect(self.path) as conn:
             cursor = conn.cursor()
             cursor.execute(
                 """
-                INSERT INTO products (name, expense) VALUES (?, ?)
+                INSERT INTO todos (todo, category) VALUES (?, ?)
                 """,
-                (name, expense),
+                (todo, category),
             )
             conn.commit()
 
-    def get_products(self):
+    # получение всех задач из таблицы todos
+    def all_todos(self):
         with sqlite3.connect(self.path) as conn:
             cursor = conn.cursor()
-            cursor.execute(
-                """SELECT name,expense FROM products 
-                """
-            )
+            cursor.execute("SELECT * FROM todos")
+            # возвращает список кортежей!
             return cursor.fetchall()
-    
-    def total_expenses (self):
+
+    def get_one_todo(self, todo_id: str):
         with sqlite3.connect(self.path) as conn:
             cursor = conn.cursor()
-            cursor.execute( """ 
-            SELECT SUM(expense) FROM products 
-            """)
-            result = cursor.fetchone()
-            if result [0]:
-                return result[0]
-            else:
-                return [0]
+            cursor.execute("SELECT * FROM todos WHERE id=?", (todo_id,))
+            return cursor.fetchone()
+
+    def delete_todo(self, todo_id: int):
+        with sqlite3.connect(self.path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM todos WHERE id = ?", (todo_id,))
+            conn.commit()
+
+    # database.update(todo_id=2, todo="do Math hw", category="school")
+    def update_todo(self, todo_id: int, todo: str, category: str):
+        with sqlite3.connect(self.path) as conn:
+            conn.execute(
+                "UPDATE todos SET todo=?, category=? WHERE id=?",
+                (todo, category, todo_id),
+            )
+            conn.commit()
+
+
+# expenses - таблица в ДЗ
